@@ -14,7 +14,7 @@ enum NetworkError: Error {
 
 class APICaller {
     
-    static func getMovies(competionHandler: @escaping (_ result: Result<TrendingMoviesModel, NetworkError>) -> Void) {
+    static func getMovies(competionHandler: @escaping (_ result: Result<MoviesModel, NetworkError>) -> Void) {
         
         let urlString = NetworkConstant.shared.serverAddress + NetworkConstant.shared.movieTitleFilter + "&apikey=" + NetworkConstant.shared.apiKey
         
@@ -32,7 +32,7 @@ class APICaller {
             guard let json = data else {return}
             
             do {
-                let result = try JSONDecoder().decode(TrendingMoviesModel.self, from: json)
+                let result = try JSONDecoder().decode(MoviesModel.self, from: json)
                 DispatchQueue.main.async {
                     competionHandler(.success(result))
                 }

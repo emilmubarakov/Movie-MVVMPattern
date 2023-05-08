@@ -12,20 +12,32 @@ class MainViewController: UIViewController {
     
     private let tableView = UITableView()
     var viewModel: MainViewModel = MainViewModel()
+    var cellDataSource: [MovieTableCellViewModel] = []
+    
+    private let activityIndicator: UIActivityIndicatorView = {
+        let activityIndicator = UIActivityIndicatorView()
+        activityIndicator.style = .large
+        activityIndicator.color = .systemGray2
+        activityIndicator.hidesWhenStopped = true
+        return activityIndicator
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        tableView.register(MovieTableViewCell.self, forCellReuseIdentifier: MovieTableViewCell.identifier)
         tableView.backgroundColor = .clear
         
         view.backgroundColor = .red
         self.title = "Main View"
         
         configureUI()
+        
         getDataFromViewModel()
+        
+        bindViewModel()
     }
     
     func configureUI() {
@@ -34,10 +46,39 @@ class MainViewController: UIViewController {
             make.edges.equalToSuperview()
         }
         
+        view.addSubview(activityIndicator)
+        activityIndicator.snp.makeConstraints { make in
+            make.centerX.centerY.equalToSuperview()
+        }
+        
     }
     
     func getDataFromViewModel() {
         viewModel.getData()
+    }
+    
+    func bindViewModel() {
+        viewModel.isLoading.bind { [weak self] isLoading in
+            guard let self = self, let isLoading = isLoading else {
+                return
+            }
+            
+            DispatchQueue.main.async {
+                if isLoading {
+                    self.activityIndicator.startAnimating()
+                } else {
+                    self.activityIndicator.stopAnimating()
+                }
+            }
+        }
+        
+        viewModel.cellDataSource.bind { [weak self] movies in
+            guard let self = self, let movies = movies else {
+                return
+            }
+            self.cellDataSource = movies
+            self.reloadTableData()
+        }
     }
 }
 
@@ -52,9 +93,23 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        cell.textLabel?.text = "Hello"
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: MovieTableViewCell.identifier, for: indexPath) as? MovieTableViewCell else {
+            return UITableViewCell()
+        }
+        
+        let cellViewModel = cellDataSource[indexPath.row]
+        cell.setUpCell(viewModel: cellViewModel)
         return cell
-    }    
+    }
+    
+    func reloadTableData() {
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        180
+    }
     
 }

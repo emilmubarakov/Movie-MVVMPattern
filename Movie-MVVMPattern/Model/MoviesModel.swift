@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct TrendingMoviesModel: Codable {
+struct MoviesModel: Codable {
     let search: [Search]
     let totalResults, response: String
 
