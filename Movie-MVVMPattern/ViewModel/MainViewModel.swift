@@ -33,14 +33,10 @@ class MainViewModel {
             case .success(let data):
                 print("Movies:" + data.totalResults)
                 self?.dataSource = data
-                self?.mapCellData()
+                self?.cellDataSource.value = data.search.compactMap({MovieTableCellViewModel(movie: $0)})
             case .failure(let error):
                 print(error)
             }
         }
-    }
-    
-    func mapCellData() {
-        self.cellDataSource.value = self.dataSource?.search.compactMap({MovieTableCellViewModel(movie: $0)})
     }
 }

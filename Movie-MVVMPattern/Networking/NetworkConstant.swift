@@ -23,7 +23,7 @@ class NetworkConstant {
     
     public var movieTitleFilter: String {
         get {
-            return "s=" + "car"
+            return "s=" + "house"
         }
     }
     

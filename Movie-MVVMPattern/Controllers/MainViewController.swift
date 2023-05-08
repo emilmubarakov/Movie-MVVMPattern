@@ -30,7 +30,7 @@ class MainViewController: UIViewController {
         tableView.register(MovieTableViewCell.self, forCellReuseIdentifier: MovieTableViewCell.identifier)
         tableView.backgroundColor = .clear
         
-        view.backgroundColor = .red
+        view.backgroundColor = .white
         self.title = "Main View"
         
         configureUI()
@@ -99,6 +99,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         
         let cellViewModel = cellDataSource[indexPath.row]
         cell.setUpCell(viewModel: cellViewModel)
+        cell.selectionStyle = .none
         return cell
     }
     
